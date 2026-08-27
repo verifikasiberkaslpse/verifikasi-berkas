@@ -10,6 +10,7 @@ import {
   mutatePpk,
   syncPpkFromPengajuan,
 } from '../lib/supabase-helpers'
+import Toast from '../components/Toast'
 
 export default function DataPPK() {
   const [ppkList, setPpkList] = React.useState([])
@@ -29,6 +30,7 @@ export default function DataPPK() {
   const [currentPage, setCurrentPage] = React.useState(1)
   const [openMenuId, setOpenMenuId] = React.useState(null)
   const [syncing, setSyncing] = React.useState(false)
+  const [toast, setToast] = React.useState({ open: false, message: '', type: 'success' })
   const ITEMS_PER_PAGE = 5
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
@@ -62,10 +64,10 @@ export default function DataPPK() {
     setSyncing(true)
     try {
       await syncPpkFromPengajuan()
-      alert('Sinkronisasi PPK selesai')
+      setToast({ open: true, message: 'Sinkronisasi PPK selesai', type: 'success' })
       loadData()
     } catch (err) {
-      alert(err.message || 'Gagal sinkronisasi data PPK')
+      setToast({ open: true, message: err.message || 'Gagal sinkronisasi data PPK', type: 'error' })
     } finally {
       setSyncing(false)
     }
@@ -143,8 +145,9 @@ export default function DataPPK() {
       }
       closeModal()
       loadData()
+      setToast({ open: true, message: 'Data PPK berhasil disimpan', type: 'success' })
     } catch (err) {
-      alert(err.message || 'Gagal menyimpan data')
+      setToast({ open: true, message: err.message || 'Gagal menyimpan data', type: 'error' })
     }
   }
 
@@ -156,8 +159,9 @@ export default function DataPPK() {
       await mutatePpk(selectedPpk.id, mutasiForm)
       closeMutasi()
       loadData()
+      setToast({ open: true, message: 'Mutasi berhasil dilakukan', type: 'success' })
     } catch (err) {
-      alert(err.message || 'Gagal melakukan mutasi')
+      setToast({ open: true, message: err.message || 'Gagal melakukan mutasi', type: 'error' })
     }
   }
 
@@ -194,6 +198,7 @@ export default function DataPPK() {
 
   return (
     <div className="w-full max-w-[1280px] pb-16 md:pb-0">
+      <Toast open={toast.open} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, open: false })} />
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
         <div>
           <h2 className="font-headline-lg text-headline-lg text-primary mb-xs">Data PPK</h2>

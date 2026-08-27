@@ -10,6 +10,7 @@ import {
   mutatePp,
   syncPpFromPengajuan,
 } from '../lib/supabase-helpers'
+import Toast from '../components/Toast'
 
 export default function DataPP() {
   const [ppList, setPpList] = React.useState([])
@@ -29,6 +30,7 @@ export default function DataPP() {
   const [currentPage, setCurrentPage] = React.useState(1)
   const [openMenuId, setOpenMenuId] = React.useState(null)
   const [syncing, setSyncing] = React.useState(false)
+  const [toast, setToast] = React.useState({ open: false, message: '', type: 'success' })
   const ITEMS_PER_PAGE = 5
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
@@ -49,10 +51,10 @@ export default function DataPP() {
     setSyncing(true)
     try {
       await syncPpFromPengajuan()
-      alert('Sinkronisasi PP selesai')
+      setToast({ open: true, message: 'Sinkronisasi PP selesai', type: 'success' })
       loadData()
     } catch (err) {
-      alert(err.message || 'Gagal sinkronisasi data PP')
+      setToast({ open: true, message: err.message || 'Gagal sinkronisasi data PP', type: 'error' })
     } finally {
       setSyncing(false)
     }
@@ -143,8 +145,9 @@ export default function DataPP() {
       }
       closeModal()
       loadData()
+      setToast({ open: true, message: 'Data PP berhasil disimpan', type: 'success' })
     } catch (err) {
-      alert(err.message || 'Gagal menyimpan data')
+      setToast({ open: true, message: err.message || 'Gagal menyimpan data', type: 'error' })
     }
   }
 
@@ -156,8 +159,9 @@ export default function DataPP() {
       await mutatePp(selectedPp.id, mutasiForm)
       closeMutasi()
       loadData()
+      setToast({ open: true, message: 'Mutasi berhasil dilakukan', type: 'success' })
     } catch (err) {
-      alert(err.message || 'Gagal melakukan mutasi')
+      setToast({ open: true, message: err.message || 'Gagal melakukan mutasi', type: 'error' })
     }
   }
 
@@ -194,6 +198,7 @@ export default function DataPP() {
 
   return (
     <div className="w-full max-w-[1280px] pb-16 md:pb-0">
+      <Toast open={toast.open} message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, open: false })} />
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
         <div>
           <h2 className="font-headline-lg text-headline-lg text-primary mb-xs">Data PP</h2>
