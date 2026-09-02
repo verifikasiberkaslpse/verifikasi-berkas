@@ -189,8 +189,35 @@ export default function PengajuanForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setSubmitting(true)
     setSubmitMessage('')
+
+    if (!isFormComplete) {
+      const missingFields = []
+      if (!formData.nama_lengkap) missingFields.push('Nama Lengkap')
+      if (!formData.nip) missingFields.push('NIP')
+      if (nipError) missingFields.push('NIP tidak valid')
+      if (!formData.jabatan) missingFields.push('Jabatan')
+      if (!formData.satker) missingFields.push('Satuan Kerja')
+      if (!files['surat_permohonan']) missingFields.push('Surat Permohonan')
+      if (!files['pakta_integritas']) missingFields.push('Pakta Integritas')
+      if (!files['sk_terbaru']) missingFields.push('SK Terbaru')
+      if (formData.jabatan === 'Pejabat Pengadaan (PP)') {
+        if (!files['surat_rekomendasi_ukpbj']) missingFields.push('Surat Rekomendasi UKPBJ')
+        if (!files['sertifikat_level1']) missingFields.push('Sertifikat PBJ Level-1')
+      }
+      if (formData.jabatan === 'Pejabat Pembuat Komitmen (PPK)' && !/kecamatan/i.test(formData.satker || '')) {
+        if (!files['sk_kpa_sertifikat_pbj']) missingFields.push('SK KPA / Sertifikat PBJ Level-1')
+      }
+      if (formData.jabatan === 'Pengguna Anggaran (PA)') {
+        if (!files['surat_permohonan']) missingFields.push('Surat Permohonan')
+        if (!files['pakta_integritas']) missingFields.push('Pakta Integritas')
+        if (!files['sk_terbaru']) missingFields.push('SK Terbaru')
+      }
+      setSubmitMessage('Mohon lengkapi dokumen wajib: ' + missingFields.join(', '))
+      return
+    }
+
+    setSubmitting(true)
 
     try {
       const dokumenList = []
@@ -605,7 +632,7 @@ export default function PengajuanForm() {
         {/* Mobile action card */}
         <div className="md:hidden bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm mt-4">
           <div className="flex flex-col gap-3">
-            <button className="w-full px-xl py-sm font-label-md text-label-md gradient-primary text-on-primary rounded-lg hover:opacity-90 shadow-md active:opacity-80 transition-all flex items-center justify-center gap-xs" type="submit" disabled={submitting}>
+            <button className="w-full px-xl py-sm font-label-md text-label-md gradient-primary text-on-primary rounded-lg hover:opacity-90 shadow-md active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting || !isFormComplete}>
               <span>{submitting ? 'Mengirim...' : 'Lanjutkan Pengajuan'}</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
@@ -620,7 +647,7 @@ export default function PengajuanForm() {
           <button onClick={handleBatal} disabled={submitting} className="order-2 sm:order-1 w-full sm:w-auto px-xl py-sm font-label-md text-label-md text-white border border-white rounded-lg hover:bg-white/10 hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed" type="button">
             Batal
           </button>
-          <button className="order-1 sm:order-2 w-full sm:w-auto px-xl py-sm font-label-md text-label-md gradient-primary text-on-primary rounded-lg hover:opacity-90 shadow-md active:opacity-80 transition-all flex items-center justify-center gap-xs" type="submit" disabled={submitting}>
+          <button className="order-1 sm:order-2 w-full sm:w-auto px-xl py-sm font-label-md text-label-md gradient-primary text-on-primary rounded-lg hover:opacity-90 shadow-md active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting || !isFormComplete}>
             <span>{submitting ? 'Mengirim...' : 'Lanjutkan Pengajuan'}</span>
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
