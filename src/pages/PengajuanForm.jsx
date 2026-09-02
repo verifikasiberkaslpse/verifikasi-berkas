@@ -59,6 +59,7 @@ export default function PengajuanForm() {
   const [loadingSatker, setLoadingSatker] = React.useState(true)
   const [nipError, setNipError] = React.useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+  const [missingDocTypes, setMissingDocTypes] = React.useState(new Set())
   const navigate = useNavigate()
 
   React.useEffect(() => {
@@ -192,31 +193,41 @@ export default function PengajuanForm() {
     setSubmitMessage('')
 
     if (!isFormComplete) {
-      const missingFields = []
-      if (!formData.nama_lengkap) missingFields.push('Nama Lengkap')
-      if (!formData.nip) missingFields.push('NIP')
-      if (nipError) missingFields.push('NIP tidak valid')
-      if (!formData.jabatan) missingFields.push('Jabatan')
-      if (!formData.satker) missingFields.push('Satuan Kerja')
-      if (!files['surat_permohonan']) missingFields.push('Surat Permohonan')
-      if (!files['pakta_integritas']) missingFields.push('Pakta Integritas')
-      if (!files['sk_terbaru']) missingFields.push('SK Terbaru')
+      const missing = []
+      if (!files['surat_permohonan']) missing.push('surat_permohonan')
+      if (!files['pakta_integritas']) missing.push('pakta_integritas')
+      if (!files['sk_terbaru']) missing.push('sk_terbaru')
       if (formData.jabatan === 'Pejabat Pengadaan (PP)') {
-        if (!files['surat_rekomendasi_ukpbj']) missingFields.push('Surat Rekomendasi UKPBJ')
-        if (!files['sertifikat_level1']) missingFields.push('Sertifikat PBJ Level-1')
+        if (!files['surat_rekomendasi_ukpbj']) missing.push('surat_rekomendasi_ukpbj')
+        if (!files['sertifikat_level1']) missing.push('sertifikat_level1')
       }
       if (formData.jabatan === 'Pejabat Pembuat Komitmen (PPK)' && !/kecamatan/i.test(formData.satker || '')) {
-        if (!files['sk_kpa_sertifikat_pbj']) missingFields.push('SK KPA / Sertifikat PBJ Level-1')
+        if (!files['sk_kpa_sertifikat_pbj']) missing.push('sk_kpa_sertifikat_pbj')
       }
-      if (formData.jabatan === 'Pengguna Anggaran (PA)') {
-        if (!files['surat_permohonan']) missingFields.push('Surat Permohonan')
-        if (!files['pakta_integritas']) missingFields.push('Pakta Integritas')
-        if (!files['sk_terbaru']) missingFields.push('SK Terbaru')
+      setMissingDocTypes(new Set(missing))
+
+      const missingLabels = {
+        surat_permohonan: 'Surat Permohonan',
+        pakta_integritas: 'Pakta Integritas',
+        sk_terbaru: 'SK Terbaru',
+        surat_rekomendasi_ukpbj: 'Surat Rekomendasi UKPBJ',
+        sertifikat_level1: 'Sertifikat PBJ Level-1',
+        sk_kpa_sertifikat_pbj: 'SK KPA / Sertifikat PBJ Level-1',
       }
-      setSubmitMessage('Mohon lengkapi dokumen wajib: ' + missingFields.join(', '))
+      const missingLabelList = missing.map(j => missingLabels[j] || j)
+      setSubmitMessage(`Dokumen belum diunggah: ${missingLabelList.join(', ')}`)
+
+      const firstMissingId = missing[0]
+      if (firstMissingId) {
+        const el = document.getElementById(`doc-${firstMissingId}`)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }
       return
     }
 
+    setMissingDocTypes(new Set())
     setSubmitting(true)
 
     try {
@@ -446,17 +457,17 @@ export default function PengajuanForm() {
             <span className="material-symbols-outlined text-secondary">cloud_upload</span>
             <h2 className="font-headline-sm text-headline-sm text-primary">Pusat Unggah Dokumen</h2>
           </div>
-           <div className="space-y-lg">
-             {formData.jabatan === 'Pejabat Pengadaan (PP)' && (
-               <div className="flex flex-col md:flex-row md:items-center justify-between gap-md p-md border border-outline-variant border-dashed rounded-lg drop-zone transition-all">
-                 <div className="flex items-start gap-md">
-                   <div className="bg-secondary-container/20 p-sm rounded-lg">
-                     <span className="material-symbols-outlined text-secondary">verified</span>
-                   </div>
-                    <div>
-                      <p className="font-label-md text-label-md text-primary">Surat Rekomendasi UKPBJ</p>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant">Format .pdf, Maksimal 2MB</p>
+            <div className="space-y-lg">
+              {formData.jabatan === 'Pejabat Pengadaan (PP)' && (
+                <div id="doc-surat_rekomendasi_ukpbj" className={`flex flex-col md:flex-row md:items-center justify-between gap-md p-md border ${missingDocTypes.has('surat_rekomendasi_ukpbj') ? 'border-error border-2 ring-2 ring-error/30' : 'border-outline-variant border-dashed'} rounded-lg drop-zone transition-all`}>
+                  <div className="flex items-start gap-md">
+                    <div className="bg-secondary-container/20 p-sm rounded-lg">
+                      <span className="material-symbols-outlined text-secondary">verified</span>
                     </div>
+                     <div>
+                       <p className="font-label-md text-label-md text-primary">Surat Rekomendasi UKPBJ</p>
+                       <p className="font-body-sm text-body-sm text-on-surface-variant">Format .pdf, Maksimal 2MB</p>
+                     </div>
                   </div>
                   <div className="flex flex-col md:flex-row md:items-center gap-sm">
                     <p className="text-[11px] text-black md:hidden">Surat rekomendasi dari UKPBJ setelah surat permohonan disetujui</p>
@@ -475,19 +486,22 @@ export default function PengajuanForm() {
                 {fileErrors['surat_rekomendasi_ukpbj'] && (
                   <p className="text-[11px] text-error mt-1">{fileErrors['surat_rekomendasi_ukpbj']}</p>
                 )}
+                {missingDocTypes.has('surat_rekomendasi_ukpbj') && (
+                  <p className="text-[11px] text-error mt-1 font-medium">Dokumen Surat Rekomendasi UKPBJ belum diunggah</p>
+                )}
                </div>
              )}
 
              {formData.jabatan === 'Pejabat Pembuat Komitmen (PPK)' && !/kecamatan/i.test(formData.satker || '') && (
-               <div className="flex flex-col md:flex-row md:items-center justify-between gap-md p-md border border-outline-variant border-dashed rounded-lg drop-zone transition-all">
-                 <div className="flex items-start gap-md">
-                   <div className="bg-secondary-container/20 p-sm rounded-lg">
-                     <span className="material-symbols-outlined text-secondary">verified</span>
-                   </div>
-                    <div>
-                       <p className="font-label-md text-label-md text-primary">Sertifikat PBJ Level-1 / SK KPA bagi PPK</p>
-                     <p className="font-body-sm text-body-sm text-on-surface-variant">Format .pdf, Maksimal 2MB</p>
+                <div id="doc-sk_kpa_sertifikat_pbj" className={`flex flex-col md:flex-row md:items-center justify-between gap-md p-md border ${missingDocTypes.has('sk_kpa_sertifikat_pbj') ? 'border-error border-2 ring-2 ring-error/30' : 'border-outline-variant border-dashed'} rounded-lg drop-zone transition-all`}>
+                  <div className="flex items-start gap-md">
+                    <div className="bg-secondary-container/20 p-sm rounded-lg">
+                      <span className="material-symbols-outlined text-secondary">verified</span>
                     </div>
+                     <div>
+                       <p className="font-label-md text-label-md text-primary">Sertifikat PBJ Level-1 / SK KPA bagi PPK</p>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">Format .pdf, Maksimal 2MB</p>
+                     </div>
                   </div>
                   <div className="flex flex-col md:flex-row md:items-center gap-sm">
                     <p className="text-[11px] text-black md:hidden">Sertifikat PBJ Level-1 yang dikeluarkan oleh LKPP / SK KPA bagi PPK</p>
@@ -506,18 +520,21 @@ export default function PengajuanForm() {
                  {fileErrors['sk_kpa_sertifikat_pbj'] && (
                    <p className="text-[11px] text-error mt-1">{fileErrors['sk_kpa_sertifikat_pbj']}</p>
                  )}
+                 {missingDocTypes.has('sk_kpa_sertifikat_pbj') && (
+                   <p className="text-[11px] text-error mt-1 font-medium">Dokumen SK KPA / Sertifikat PBJ Level-1 belum diunggah</p>
+                 )}
                </div>
              )}
 
-             <div className="flex flex-col md:flex-row md:items-center justify-between gap-md p-md border border-outline-variant border-dashed rounded-lg drop-zone transition-all">
-              <div className="flex items-start gap-md">
-                <div className="bg-secondary-container/20 p-sm rounded-lg">
-                  <span className="material-symbols-outlined text-secondary">description</span>
-                </div>
-                 <div>
-                    <p className="font-label-md text-label-md text-primary">Surat Permohonan Verifikasi</p>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">Format .pdf, Maksimal 2MB</p>
+              <div id="doc-surat_permohonan" className={`flex flex-col md:flex-row md:items-center justify-between gap-md p-md border ${missingDocTypes.has('surat_permohonan') ? 'border-error border-2 ring-2 ring-error/30' : 'border-outline-variant border-dashed'} rounded-lg drop-zone transition-all`}>
+               <div className="flex items-start gap-md">
+                 <div className="bg-secondary-container/20 p-sm rounded-lg">
+                   <span className="material-symbols-outlined text-secondary">description</span>
                  </div>
+                  <div>
+                     <p className="font-label-md text-label-md text-primary">Surat Permohonan Verifikasi</p>
+                     <p className="font-body-sm text-body-sm text-on-surface-variant">Format .pdf, Maksimal 2MB</p>
+                  </div>
                </div>
                 <div className="flex flex-col md:flex-row md:items-center gap-sm">
                   <p className="text-[11px] text-black md:hidden">Wajib diunggah dengan tanda tangan basah dan stempel atau menggunakan TTE</p>
@@ -536,9 +553,12 @@ export default function PengajuanForm() {
               {fileErrors['surat_permohonan'] && (
                 <p className="text-[11px] text-error mt-1">{fileErrors['surat_permohonan']}</p>
               )}
+              {missingDocTypes.has('surat_permohonan') && (
+                <p className="text-[11px] text-error mt-1 font-medium">Dokumen Surat Permohonan belum diunggah</p>
+              )}
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-md p-md border border-outline-variant border-dashed rounded-lg drop-zone transition-all">
+            <div id="doc-pakta_integritas" className={`flex flex-col md:flex-row md:items-center justify-between gap-md p-md border ${missingDocTypes.has('pakta_integritas') ? 'border-error border-2 ring-2 ring-error/30' : 'border-outline-variant border-dashed'} rounded-lg drop-zone transition-all`}>
               <div className="flex items-start gap-md">
                 <div className="bg-secondary-container/20 p-sm rounded-lg">
                   <span className="material-symbols-outlined text-secondary">verified</span>
@@ -565,9 +585,12 @@ export default function PengajuanForm() {
               {fileErrors['pakta_integritas'] && (
                 <p className="text-[11px] text-error mt-1">{fileErrors['pakta_integritas']}</p>
               )}
+              {missingDocTypes.has('pakta_integritas') && (
+                <p className="text-[11px] text-error mt-1 font-medium">Dokumen Pakta Integritas belum diunggah</p>
+              )}
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-md p-md border border-outline-variant border-dashed rounded-lg drop-zone transition-all">
+            <div id="doc-sk_terbaru" className={`flex flex-col md:flex-row md:items-center justify-between gap-md p-md border ${missingDocTypes.has('sk_terbaru') ? 'border-error border-2 ring-2 ring-error/30' : 'border-outline-variant border-dashed'} rounded-lg drop-zone transition-all`}>
               <div className="flex items-start gap-md">
                 <div className="bg-secondary-container/20 p-sm rounded-lg">
                   <span className="material-symbols-outlined text-secondary">assignment_ind</span>
@@ -594,19 +617,22 @@ export default function PengajuanForm() {
               {fileErrors['sk_terbaru'] && (
                 <p className="text-[11px] text-error mt-1">{fileErrors['sk_terbaru']}</p>
               )}
+              {missingDocTypes.has('sk_terbaru') && (
+                <p className="text-[11px] text-error mt-1 font-medium">Dokumen SK PP/PPK/PA Terbaru belum diunggah</p>
+              )}
             </div>
 
              {formData.jabatan === 'Pejabat Pengadaan (PP)' && (
-               <div className="flex flex-col md:flex-row md:items-center justify-between gap-md p-md border border-outline-variant border-dashed rounded-lg drop-zone transition-all">
-                 <div className="flex items-start gap-md">
-                   <div className="bg-secondary-container/20 p-sm rounded-lg">
-                     <span className="material-symbols-outlined text-secondary">verified</span>
-                   </div>
-                    <div>
-                      <p className="font-label-md text-label-md text-primary">Sertifikat PBJ Level-1</p>
-                     <p className="font-body-sm text-body-sm text-on-surface-variant">Format .pdf, Maksimal 2MB</p>
-                   </div>
-                 </div>
+                <div id="doc-sertifikat_level1" className={`flex flex-col md:flex-row md:items-center justify-between gap-md p-md border ${missingDocTypes.has('sertifikat_level1') ? 'border-error border-2 ring-2 ring-error/30' : 'border-outline-variant border-dashed'} rounded-lg drop-zone transition-all`}>
+                  <div className="flex items-start gap-md">
+                    <div className="bg-secondary-container/20 p-sm rounded-lg">
+                      <span className="material-symbols-outlined text-secondary">verified</span>
+                    </div>
+                     <div>
+                       <p className="font-label-md text-label-md text-primary">Sertifikat PBJ Level-1</p>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">Format .pdf, Maksimal 2MB</p>
+                     </div>
+                  </div>
                   <div className="flex flex-col md:flex-row md:items-center gap-sm">
                     <p className="text-[11px] text-black md:hidden">Sertifikat PBJ Level-1 yang dikeluarkan oleh LKPP / SK KPA bagi PPK</p>
                     <label className="cursor-pointer gradient-primary text-on-primary font-label-md text-label-md px-xl md:px-md py-sm rounded-lg hover:opacity-90 transition-all inline-block text-center shadow-sm w-full md:w-auto">
@@ -623,6 +649,9 @@ export default function PengajuanForm() {
                   </div>
                 {fileErrors['sertifikat_level1'] && (
                   <p className="text-[11px] text-error mt-1">{fileErrors['sertifikat_level1']}</p>
+                )}
+                {missingDocTypes.has('sertifikat_level1') && (
+                  <p className="text-[11px] text-error mt-1 font-medium">Dokumen Sertifikat PBJ Level-1 belum diunggah</p>
                 )}
               </div>
             )}
