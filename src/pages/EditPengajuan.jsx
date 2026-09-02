@@ -653,7 +653,7 @@ export default function EditPengajuan() {
         {/* Mobile action card */}
         <div className="md:hidden bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm mt-4">
           <div className="flex flex-col gap-3">
-            <button className="w-full px-xl py-sm font-label-md text-label-md bg-primary text-on-primary rounded-lg hover:bg-primary-container shadow-sm active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting || !isFormComplete}>
+            <button className="w-full px-xl py-sm font-label-md text-label-md bg-primary text-on-primary rounded-lg hover:bg-primary-container shadow-sm active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting}>
               <span>{submitting ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
             </button>
             <button type="button" onClick={() => navigate(-1)} className="w-full px-xl py-sm font-label-md text-label-md text-white rounded-lg hover:opacity-90 shadow-sm active:opacity-80 transition-all" style={{ background: '#2563eb' }}>
@@ -667,7 +667,7 @@ export default function EditPengajuan() {
           <button type="button" onClick={() => navigate(-1)} className="w-full sm:w-auto px-xl py-sm font-label-md text-label-md text-white border border-white rounded-lg hover:bg-white/10 hover:shadow-sm transition-all">
             Batal
           </button>
-          <button className="w-full sm:w-auto px-xl py-sm font-label-md text-label-md bg-primary text-on-primary rounded-lg hover:bg-primary-container shadow-sm active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting || !isFormComplete}>
+          <button className="w-full sm:w-auto px-xl py-sm font-label-md text-label-md bg-primary text-on-primary rounded-lg hover:bg-primary-container shadow-sm active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting}>
             <span>{submitting ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
           </button>
         </div>
