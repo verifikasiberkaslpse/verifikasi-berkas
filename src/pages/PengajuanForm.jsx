@@ -661,7 +661,7 @@ export default function PengajuanForm() {
         {/* Mobile action card */}
         <div className="md:hidden bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm mt-4">
           <div className="flex flex-col gap-3">
-            <button className="w-full px-xl py-sm font-label-md text-label-md gradient-primary text-on-primary rounded-lg hover:opacity-90 shadow-md active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting || !isFormComplete}>
+            <button className="w-full px-xl py-sm font-label-md text-label-md gradient-primary text-on-primary rounded-lg hover:opacity-90 shadow-md active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting}>
               <span>{submitting ? 'Mengirim...' : 'Lanjutkan Pengajuan'}</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
@@ -676,7 +676,7 @@ export default function PengajuanForm() {
           <button onClick={handleBatal} disabled={submitting} className="order-2 sm:order-1 w-full sm:w-auto px-xl py-sm font-label-md text-label-md text-white border border-white rounded-lg hover:bg-white/10 hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed" type="button">
             Batal
           </button>
-          <button className="order-1 sm:order-2 w-full sm:w-auto px-xl py-sm font-label-md text-label-md gradient-primary text-on-primary rounded-lg hover:opacity-90 shadow-md active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting || !isFormComplete}>
+          <button className="order-1 sm:order-2 w-full sm:w-auto px-xl py-sm font-label-md text-label-md gradient-primary text-on-primary rounded-lg hover:opacity-90 shadow-md active:opacity-80 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={submitting}>
             <span>{submitting ? 'Mengirim...' : 'Lanjutkan Pengajuan'}</span>
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
