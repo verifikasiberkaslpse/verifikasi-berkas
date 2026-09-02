@@ -135,6 +135,7 @@ export default function PengajuanForm() {
     files['sk_terbaru'] &&
     (formData.jabatan !== 'Pejabat Pengadaan (PP)' || (files['surat_rekomendasi_ukpbj'] && files['sertifikat_level1'])) &&
     (formData.jabatan !== 'Pejabat Pembuat Komitmen (PPK)' || /kecamatan/i.test(formData.satker || '') || files['sk_kpa_sertifikat_pbj']) &&
+    (formData.jabatan !== 'Pengguna Anggaran (PA)' || (files['sk_terbaru'] && files['pakta_integritas'] && files['surat_permohonan'])) &&
     !nipError
   )
 

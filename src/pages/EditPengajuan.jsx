@@ -190,7 +190,8 @@ export default function EditPengajuan() {
       (revisedDocTypes.length === 0 || revisedDocTypes.includes('pakta_integritas') ? !!files['pakta_integritas'] : true) &&
       (revisedDocTypes.length === 0 || revisedDocTypes.includes('sk_terbaru') ? !!files['sk_terbaru'] : true) &&
       (formData.jabatan !== 'Pejabat Pengadaan (PP)' || ((revisedDocTypes.length === 0 || revisedDocTypes.includes('surat_rekomendasi_ukpbj')) ? !!files['surat_rekomendasi_ukpbj'] : true) && ((revisedDocTypes.length === 0 || revisedDocTypes.includes('sertifikat_level1')) ? !!files['sertifikat_level1'] : true)) &&
-      (formData.jabatan !== 'Pejabat Pembuat Komitmen (PPK)' || /kecamatan/i.test(formData.satker || '') || ((revisedDocTypes.length === 0 || revisedDocTypes.includes('sk_kpa_sertifikat_pbj')) ? !!files['sk_kpa_sertifikat_pbj'] : true))
+      (formData.jabatan !== 'Pejabat Pembuat Komitmen (PPK)' || /kecamatan/i.test(formData.satker || '') || ((revisedDocTypes.length === 0 || revisedDocTypes.includes('sk_kpa_sertifikat_pbj')) ? !!files['sk_kpa_sertifikat_pbj'] : true)) &&
+      (formData.jabatan !== 'Pengguna Anggaran (PA)' || ((revisedDocTypes.length === 0 || revisedDocTypes.includes('surat_permohonan')) ? !!files['surat_permohonan'] : true) && ((revisedDocTypes.length === 0 || revisedDocTypes.includes('pakta_integritas')) ? !!files['pakta_integritas'] : true) && ((revisedDocTypes.length === 0 || revisedDocTypes.includes('sk_terbaru')) ? !!files['sk_terbaru'] : true))
   )
 
    const getMissingDocuments = () => {
@@ -209,6 +210,11 @@ export default function EditPengajuan() {
      }
      if (formData.jabatan === 'Pejabat Pembuat Komitmen (PPK)' && !/kecamatan/i.test(formData.satker || '')) {
        if ((revisedDocTypes.length === 0 || revisedDocTypes.includes('sk_kpa_sertifikat_pbj')) && !files['sk_kpa_sertifikat_pbj']) missing.push('sk_kpa_sertifikat_pbj')
+     }
+     if (formData.jabatan === 'Pengguna Anggaran (PA)') {
+       if ((revisedDocTypes.length === 0 || revisedDocTypes.includes('surat_permohonan')) && !files['surat_permohonan']) missing.push('surat_permohonan')
+       if ((revisedDocTypes.length === 0 || revisedDocTypes.includes('pakta_integritas')) && !files['pakta_integritas']) missing.push('pakta_integritas')
+       if ((revisedDocTypes.length === 0 || revisedDocTypes.includes('sk_terbaru')) && !files['sk_terbaru']) missing.push('sk_terbaru')
      }
      return missing
    }
