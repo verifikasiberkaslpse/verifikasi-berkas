@@ -73,6 +73,7 @@ export default function EditPengajuan() {
     if (lower.includes('sertifikat pbj level-1') || lower.includes('sertifikat level-1')) types.push('sertifikat_level1')
     if (lower.includes('surat rekomendasi') || lower.includes('ukpbj')) types.push('surat_rekomendasi_ukpbj')
     if (lower.includes('sk kpa')) types.push('sk_kpa_sertifikat_pbj')
+    if (lower.includes('sertifikat pbj')) types.push('sk_kpa_sertifikat_pbj')
     if (lower.includes('surat permohonan')) types.push('surat_permohonan')
     return types
   }
