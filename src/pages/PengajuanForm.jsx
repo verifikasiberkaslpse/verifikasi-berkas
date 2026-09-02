@@ -124,6 +124,14 @@ export default function PengajuanForm() {
       return
     }
     setFiles((prev) => ({ ...prev, [jenis]: file }))
+    if (file) {
+      setMissingDocTypes((prev) => {
+        if (!prev.has(jenis)) return prev
+        const next = new Set(prev)
+        next.delete(jenis)
+        return next
+      })
+    }
   }
 
   const isFormComplete = Boolean(
@@ -205,17 +213,6 @@ export default function PengajuanForm() {
         if (!files['sk_kpa_sertifikat_pbj']) missing.push('sk_kpa_sertifikat_pbj')
       }
       setMissingDocTypes(new Set(missing))
-
-      const missingLabels = {
-        surat_permohonan: 'Surat Permohonan',
-        pakta_integritas: 'Pakta Integritas',
-        sk_terbaru: 'SK Terbaru',
-        surat_rekomendasi_ukpbj: 'Surat Rekomendasi UKPBJ',
-        sertifikat_level1: 'Sertifikat PBJ Level-1',
-        sk_kpa_sertifikat_pbj: 'SK KPA / Sertifikat PBJ Level-1',
-      }
-      const missingLabelList = missing.map(j => missingLabels[j] || j)
-      setSubmitMessage(`Dokumen belum diunggah: ${missingLabelList.join(', ')}`)
 
       const firstMissingId = missing[0]
       if (firstMissingId) {
